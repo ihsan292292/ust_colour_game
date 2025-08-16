@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌈 Color Knowledge Quiz - Hand Gesture Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Game Header -->
+        <header class="game-header">
+            <div class="logo">
+                <img src="ust_logo.jpg" alt="UST Logo" class="ust-logo">
+                <h1>UST COLOUR QUIZ GAME</h1>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">ustar Points</span>
+                    <span class="stat-value" id="score">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Lives</span>
+                    <span class="stat-value" id="lives">❤️❤️❤️</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Level</span>
+                    <span class="stat-value" id="level">1</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Game Main Area -->
+        <main class="game-main">
+            <!-- Color Categories Sidebar -->
+            <aside class="color-categories-sidebar">
+                <h3>UST Color Categories</h3>
+                <div class="color-categories-list" id="colorCategoriesList">
+                    <div class="color-category" data-color="Purple">
+                        <div class="color-box" style="background-color: #7B2CBF;"></div>
+                        <div class="color-info">
+                            <span class="color-name">Purple</span>
+                            
+                        </div>
+                    </div>
+                    <div class="color-category" data-color="Indigo">
+                        <div class="color-box" style="background-color: #3F37C9;"></div>
+                        <div class="color-info">
+                            <span class="color-name">Indigo</span>
+                        </div>
+                    </div>
+                    <div class="color-category" data-color="Quartz">
+                        <div class="color-box" style="background-color: #51484F;"></div>
+                        <div class="color-info">
+                            <span class="color-name">Quartz</span>
+                        </div>
+                    </div>
+                    <div class="color-category" data-color="Green">
+                        <div class="color-box" style="background-color: #01B27C;"></div>
+                        <div class="color-info">
+                            <span class="color-name">Green</span>
+                        </div>
+                    </div>
+                    <div class="color-category" data-color="Gold">
+                        <div class="color-box" style="background-color: #FFD700;"></div>
+                        <div class="color-info">
+                            <span class="color-name">Gold</span>
+                        </div>
+                    </div>
+                    <div class="color-category" data-color="Orange">
+                        <div class="color-box" style="background-color: #FF8500;"></div>
+                        <div class="color-info">
+                            <span class="color-name">Orange</span>
+                            
+                        </div>
+                    </div>
+                    <div class="color-category" data-color="Rose">
+                        <div class="color-box" style="background-color: #FF69B4;"></div>
+                        <div class="color-info">
+                            <span class="color-name">Rose</span>
+                            
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Game Content Area -->
+            <div class="game-content">
+                <!-- Current Question Display -->
+                <div class="question-display" id="questionDisplay">
+                    <h2 class="current-question" id="currentQuestion">Get ready to start the quiz!</h2>
+                </div>
+                
+                <!-- Game Canvas -->
+                <div class="game-area">
+                    <canvas id="gameCanvas"></canvas>
+                
+                <!-- Game Overlays -->
+                <div class="game-overlay" id="startScreen">
+                    <div class="overlay-content">
+                        <h2>🌈 Find UST Colours! ✈️</h2>
+                        <p>Pilot your aircraft to collect the correct colors:</p>
+                        <div class="gesture-instructions">
+                            <div class="gesture-item">
+                                <span class="gesture-icon">✋</span>
+                                <span>Open Hand = Fly Up</span>
+                            </div>
+                            <div class="gesture-item">
+                                <span class="gesture-icon">✊</span>
+                                <span>Closed Fist = Fly Down</span>
+                            </div>
+                        </div>
+                        <div class="color-info">
+                            <p><strong>How to Play:</strong></p>
+                            <p>• Read the question at the top of the screen</p>
+                            <p>• Flying color blocks will appear from the right</p>
+                            <p>• Use gestures to fly and collect the CORRECT color</p>
+                            <p>• Earn 100 ustar points for each correct collection</p>
+                            <p>• You have 4 lives - avoid wrong colors!</p>
+                        </div>
+                        <button class="start-btn" onclick="startGame()">START QUIZ</button>
+                        </div>
+                </div>
+
+                <div class="game-overlay hidden" id="pauseScreen">
+                    <div class="overlay-content">
+                        <h2>⏸️ Quiz Paused</h2>
+                        <button class="resume-btn" onclick="resumeGame()">RESUME QUIZ</button>
+                        <button class="restart-btn" onclick="restartGame()">RESTART QUIZ</button>
+                    </div>
+                </div>
+
+                <div class="game-overlay hidden" id="gameOverScreen">
+                    <div class="overlay-content">
+                        <h2>🎯 Quiz Complete!</h2>
+                        <p class="final-score">Final Score: <span id="finalScore">0</span></p>
+                        <div class="achievements" id="achievements"></div>
+                        <button class="restart-btn" onclick="restartGame()">TRY AGAIN</button>
+                    </div>
+                </div>
+
+                <div class="game-overlay hidden" id="winnerScreen">
+                    <div class="overlay-content winner-content">
+                        <h2>🏆 CONGRATULATIONS! 🌈</h2>
+                        <h3>🎉 Perfect Color Master! 🎉</h3>
+                        <p class="winner-message">You answered all 7 color categories correctly!</p>
+                        <div class="winner-stats">
+                            <div class="winner-stat">
+                                <span class="stat-icon">🌟</span>
+                                <span class="stat-text">Perfect Score: <span id="winnerScore">0</span></span>
+                            </div>
+                            <div class="winner-stat">
+                                <span class="stat-icon">🎯</span>
+                                <span class="stat-text">Questions Mastered: 7/7</span>
+                            </div>
+                            <div class="winner-stat">
+                                <span class="stat-icon">✈️</span>
+                                <span class="stat-text">Flight Mission Complete!</span>
+                            </div>
+                        </div>
+                        <button class="restart-btn winner-btn" onclick="restartGame()">🚀 NEW MISSION</button>
+                    </div>
+                </div>
+
+                <!-- Hand Tracking Video -->
+                <video id="videoElement" class="hand-tracking-video" autoplay muted playsinline></video>
+                <canvas id="handCanvas" class="hand-tracking-overlay"></canvas>
+            </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <div class="gesture-status">
+                    <h3>🤖 Gesture Recognition</h3>
+                    <div class="status-indicator" id="cameraStatus">
+                        <span class="status-light"></span>
+                        <span>Camera: Connecting...</span>
+                    </div>
+                    <div class="current-gesture">
+                        <span class="gesture-display" id="currentGesture">🤷‍♂️ No Gesture</span>
+                    </div>
+                    <div class="gesture-confidence">
+                        <label>Confidence:</label>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="confidenceBar"></div>
+                        </div>
+                        <span id="confidenceText">0%</span>
+                    </div>
+                </div>
+
+                <div class="game-controls">
+                    <h3>🎮 Game Controls</h3>
+                    <div class="control-buttons">
+                        <button class="control-btn" onclick="togglePause()" id="pauseBtn">⏸️ PAUSE</button>
+                        <button class="control-btn" onclick="toggleSound()" id="soundBtn">🔊 SOUND ON</button>
+                        <button class="control-btn" onclick="showInstructions()" id="helpBtn">❓ HELP</button>
+                    </div>
+                    <div class="difficulty-selector">
+                        <label>Difficulty:</label>
+                        <select id="difficulty" onchange="changeDifficulty()">
+                            <option value="easy">🟢 Easy</option>
+                            <option value="normal" selected>🟡 Normal</option>
+                            <option value="hard">🔴 Hard</option>
+                            <option value="nightmare">💀 Nightmare</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="performance-stats">
+                    <h3>📊 Quiz Statistics</h3>
+                    <div class="stat-row">
+                        <span>Accuracy:</span>
+                        <span id="accuracy">0%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Correct Answers:</span>
+                        <span id="enemiesHit">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Questions Answered:</span>
+                        <span id="timePlayed">0 Questions</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MediaPipe Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    
+    <!-- Game Scripts -->
+    <script src="game.js"></script>
+    <script src="handTracking.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
