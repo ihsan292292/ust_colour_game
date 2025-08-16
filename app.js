@@ -54,8 +54,8 @@ class GameApp {
             // Hide loading screen
             this.hideLoadingScreen();
             
-            // Show start screen
-            this.showStartScreen();
+            // Show player registration screen instead of start screen
+            this.showPlayerRegistrationScreen();
             
             // Set up event listeners
             this.setupEventListeners();
@@ -169,6 +169,13 @@ class GameApp {
         const startScreen = document.getElementById('startScreen');
         if (startScreen) {
             startScreen.classList.remove('hidden');
+        }
+    }
+    
+    showPlayerRegistrationScreen() {
+        const registrationScreen = document.getElementById('playerRegistrationScreen');
+        if (registrationScreen) {
+            registrationScreen.classList.remove('hidden');
         }
     }
 

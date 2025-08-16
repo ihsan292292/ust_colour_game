@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>🌈 Color Knowledge Quiz - Hand Gesture Game</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10,6 +13,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Audio Elements -->
+    <audio id="backgroundMusic" loop preload="auto">
+        <!-- Free Creative Commons music - replace with your own files -->
+        <source src="https://archive.org/download/DST-DarknessToLight/DST-DarknessToLight.mp3" type="audio/mpeg">
+        <!-- Fallback: You can replace with your own music files -->
+    </audio>
+    
+    <audio id="correctSound" preload="auto">
+        <!-- Simple correct sound - will use Web Audio API fallback -->
+    </audio>
+    
+    <audio id="wrongSound" preload="auto">
+        <!-- Simple wrong sound - will use Web Audio API fallback -->
+    </audio>
+
     <div class="game-container">
         <!-- Game Header -->
         <header class="game-header">
@@ -29,6 +47,11 @@
                 <div class="stat-item">
                     <span class="stat-label">Level</span>
                     <span class="stat-value" id="level">1</span>
+                </div>
+                <div class="stat-item">
+                    <button id="audioToggle" class="audio-toggle" title="Toggle Background Music">
+                        🔊
+                    </button>
                 </div>
             </div>
         </header>
@@ -99,7 +122,109 @@
                     <canvas id="gameCanvas"></canvas>
                 
                 <!-- Game Overlays -->
-                <div class="game-overlay" id="startScreen">
+                <!-- Player Registration Screen -->
+                <div class="game-overlay" id="playerRegistrationScreen">
+                    <div class="overlay-content registration-content">
+                        <h2>🎮 Welcome to UST Color Quiz! 🌈</h2>
+                        <div class="registration-form">
+                            <div class="form-group">
+                                <label for="playerName">👤 Player Name:</label>
+                                <input type="text" id="playerName" placeholder="Enter your name" maxlength="20">
+                            </div>
+                            <div class="form-group">
+                                <label for="playerAccount">🏢 UST Account (Optional):</label>
+                                <input type="text" id="playerAccount" placeholder="Enter your UST ID" maxlength="50">
+                            </div>
+                        </div>
+                        <div class="welcome-info">
+                            <h3>🎯 Game Overview</h3>
+                            <p>Test your knowledge of UST's 7 color categories while controlling your aircraft with hand gestures!</p>
+                            <ul>
+                                <li>🟣 Purple - People</li>
+                                <li>🔵 Indigo - Integral Processes</li>
+                                <li>⚫ Quartz - Quality</li>
+                                <li>🟢 Green - Growth</li>
+                                <li>🟡 Gold - Global Branding</li>
+                                <li>🟠 Orange - Organizational Efficiency</li>
+                                <li>🌸 Rose - Relation</li>
+                            </ul>
+                        </div>
+                        <button class="start-btn" onclick="showGestureDemo()">NEXT: LEARN CONTROLS ➡️</button>
+                    </div>
+                </div>
+
+                <!-- Gesture Demo Screen -->
+                <div class="game-overlay hidden" id="gestureDemoScreen">
+                    <div class="overlay-content demo-content">
+                        <h2>✋ Hand Gesture Tutorial</h2>
+                        <div class="demo-area">
+                            <div class="demo-video-container">
+                                <video id="demoVideoElement" class="demo-video" autoplay muted playsinline></video>
+                                <canvas id="demoHandCanvas" class="demo-hand-overlay"></canvas>
+                                <div class="demo-status">
+                                    <div class="demo-camera-status" id="demoCameraStatus">
+                                        <span class="status-light"></span>
+                                        <span>Camera: Connecting...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-instructions">
+                                <h3>🎯 Practice These Gestures:</h3>
+                                <div class="demo-gesture-list">
+                                    <div class="demo-gesture-item" id="demoGestureUp">
+                                        <div class="gesture-visual">✋</div>
+                                        <div class="gesture-details">
+                                            <h4>Open Hand</h4>
+                                            <p>Fly Up ⬆️</p>
+                                            <div class="practice-status">Try it now!</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="demo-gesture-item" id="demoGestureDown">
+                                        <div class="gesture-visual">✊</div>
+                                        <div class="gesture-details">
+                                            <h4>Closed Fist</h4>
+                                            <p>Fly Down ⬇️</p>
+                                            <div class="practice-status">Try it now!</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="demo-progress">
+                                    <h4>🏆 Practice Progress:</h4>
+                                    <div class="progress-items">
+                                        <div class="progress-item" id="progressUp">
+                                            <span>Open Hand:</span>
+                                            <span class="progress-status">❌ Not Practiced</span>
+                                        </div>
+                                        <div class="progress-item" id="progressDown">
+                                            <span>Closed Fist:</span>
+                                            <span class="progress-status">❌ Not Practiced</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="demo-controls">
+                            <button class="back-btn" onclick="showPlayerRegistration()">⬅️ BACK</button>
+                            <button class="start-btn" id="startGameBtn" onclick="startGameFromDemo()" disabled>START GAME 🚀</button>
+                        </div>
+                        
+                        <div class="demo-tips">
+                            <h4>💡 Tips for Better Recognition:</h4>
+                            <ul>
+                                <li>• Keep your hand clearly visible in the camera</li>
+                                <li>• Make distinct gestures (fully open or fully closed)</li>
+                                <li>• Hold gestures for 1-2 seconds</li>
+                                <li>• Ensure good lighting for better detection</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-overlay hidden" id="startScreen">
                     <div class="overlay-content">
                         <h2>🌈 Find UST Colours! ✈️</h2>
                         <p>Pilot your aircraft to collect the correct colors:</p>
@@ -235,6 +360,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
     
     <!-- Game Scripts -->
+    <script src="audioManager.js"></script>
+    <script src="playerRegistration.js"></script>
+    <script src="touchControls.js"></script>
     <script src="game.js"></script>
     <script src="handTracking.js"></script>
     <script src="app.js"></script>

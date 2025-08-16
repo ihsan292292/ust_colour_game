@@ -57,6 +57,14 @@ class FlightAdventureGame {
         this.totalQuestions = 7; // Total number of different questions (one for each color category)
         this.askedQuestions = new Set(); // Track which categories have been asked
         
+        // Player information
+        this.playerInfo = {
+            name: 'Player',
+            account: '',
+            gameStartTime: null,
+            totalScore: 0
+        };
+        
         // Load images first, then initialize game objects
         this.loadImages().then(() => {
             this.initializeGame();
@@ -76,18 +84,47 @@ class FlightAdventureGame {
         const gameArea = this.canvas.parentElement;
         const rect = gameArea.getBoundingClientRect();
         
-        // Set canvas size to fit the container while maintaining aspect ratio
-        const maxWidth = Math.min(rect.width - 40, window.innerWidth - 100);
-        const maxHeight = Math.min(rect.height - 40, window.innerHeight - 200);
+        // Detect mobile devices
+        const isMobile = window.innerWidth <= 768;
+        const isSmallMobile = window.innerWidth <= 480;
         
-        // Maintain 4:3 aspect ratio
-        let canvasWidth = maxWidth;
-        let canvasHeight = (maxWidth * 3) / 4;
+        // Set canvas size based on device type
+        let maxWidth, maxHeight;
         
-        if (canvasHeight > maxHeight) {
-            canvasHeight = maxHeight;
-            canvasWidth = (maxHeight * 4) / 3;
+        if (isSmallMobile) {
+            // Small mobile - use almost full width with minimal padding
+            maxWidth = Math.min(rect.width - 10, window.innerWidth - 20);
+            maxHeight = Math.min(rect.height - 10, 280); // Fixed height for small screens
+        } else if (isMobile) {
+            // Tablet/large mobile
+            maxWidth = Math.min(rect.width - 20, window.innerWidth - 40);
+            maxHeight = Math.min(rect.height - 20, 380);
+        } else {
+            // Desktop
+            maxWidth = Math.min(rect.width - 40, window.innerWidth - 100);
+            maxHeight = Math.min(rect.height - 40, window.innerHeight - 200);
         }
+        
+        // Maintain aspect ratio but be more flexible on mobile
+        let canvasWidth = maxWidth;
+        let canvasHeight;
+        
+        if (isMobile) {
+            // On mobile, prioritize width and adjust height accordingly
+            canvasHeight = Math.min(maxHeight, (maxWidth * 2) / 3); // 3:2 ratio for mobile
+        } else {
+            // Desktop maintains 4:3 ratio
+            canvasHeight = (maxWidth * 3) / 4;
+            
+            if (canvasHeight > maxHeight) {
+                canvasHeight = maxHeight;
+                canvasWidth = (maxHeight * 4) / 3;
+            }
+        }
+        
+        // Ensure minimum dimensions
+        canvasWidth = Math.max(canvasWidth, 280);
+        canvasHeight = Math.max(canvasHeight, 200);
         
         // Set the actual canvas size
         this.canvas.width = canvasWidth;
@@ -109,8 +146,23 @@ class FlightAdventureGame {
         if (this.player) {
             this.player.targetY = this.height / 2;
             this.player.y = this.height / 2;
-            this.player.minY = 60; // Updated bounds since color guide is in sidebar
-            this.player.maxY = this.height - 60;
+            
+            // Adjust bounds based on screen size
+            const verticalPadding = isMobile ? 40 : 60;
+            this.player.minY = verticalPadding;
+            this.player.maxY = this.height - verticalPadding;
+            
+            // Scale player size for mobile
+            if (isSmallMobile) {
+                this.player.width = 60;
+                this.player.height = 38;
+            } else if (isMobile) {
+                this.player.width = 70;
+                this.player.height = 44;
+            } else {
+                this.player.width = 80;
+                this.player.height = 50;
+            }
         }
     }
 
@@ -133,19 +185,32 @@ class FlightAdventureGame {
     }
 
     initializeGame() {
-        // Initialize player aircraft
+        // Detect mobile for adjusted settings
+        const isMobile = window.innerWidth <= 768;
+        const isSmallMobile = window.innerWidth <= 480;
+        
+        // Initialize player aircraft with mobile adjustments
         this.player = {
             x: 100,
             y: this.height / 2,
-            width: 80,
-            height: 50,
+            width: isSmallMobile ? 60 : isMobile ? 70 : 80,
+            height: isSmallMobile ? 38 : isMobile ? 44 : 50,
             targetY: this.height / 2,
-            speed: 5,
+            speed: isMobile ? 4 : 5, // Slightly slower on mobile for better control
             health: 100,
             maxHealth: 100,
-            minY: 60, // Reduced since color guide is now in sidebar
-            maxY: this.height - 60
+            minY: isMobile ? 40 : 60,
+            maxY: this.height - (isMobile ? 40 : 60)
         };
+        
+        // Adjust game timing for mobile
+        if (isMobile) {
+            this.colorSpawnRate = 2500; // Slower spawn rate on mobile
+            this.gestureActionCooldown = 150; // Faster response for touch
+        } else {
+            this.colorSpawnRate = 2000;
+            this.gestureActionCooldown = 200;
+        }
         
         // Initialize color targets (flying color choices)
         this.colorTargets = [];
@@ -232,6 +297,12 @@ class FlightAdventureGame {
         this.initializeGame();
         this.initializeStars();
         this.generateNewQuestion();
+        
+        // Start background music
+        if (window.audioManager) {
+            window.audioManager.playBackgroundMusic();
+        }
+        
         this.gameLoop();
         this.updateUI();
     }
@@ -246,6 +317,33 @@ class FlightAdventureGame {
         if (this.gameState === 'paused') {
             this.gameState = 'playing';
             this.gameLoop();
+        }
+    }
+    
+    setPlayerInfo(playerData) {
+        this.playerInfo = {
+            ...this.playerInfo,
+            ...playerData,
+            gameStartTime: new Date()
+        };
+        
+        // Update UI with player name
+        this.updatePlayerDisplay();
+        
+        console.log(`Game started by: ${this.playerInfo.name}${this.playerInfo.account ? ` (${this.playerInfo.account})` : ''}`);
+    }
+    
+    updatePlayerDisplay() {
+        // Update any UI elements that show player name
+        const playerElements = document.querySelectorAll('.player-name');
+        playerElements.forEach(element => {
+            element.textContent = this.playerInfo.name;
+        });
+        
+        // Update game title with player name
+        const gameTitle = document.querySelector('.game-header h1');
+        if (gameTitle && this.playerInfo.name !== 'Player') {
+            gameTitle.textContent = `${this.playerInfo.name}'s Color Quiz`;
         }
     }
 
@@ -362,12 +460,16 @@ class FlightAdventureGame {
         // Randomly select a color from the current question choices
         const randomChoice = this.currentQuestion.choices[Math.floor(Math.random() * this.currentQuestion.choices.length)];
         
+        // Adjust target size for mobile
+        const isMobile = window.innerWidth <= 768;
+        const isSmallMobile = window.innerWidth <= 480;
+        
         const target = {
             x: this.width,
             y: Math.random() * (this.height - 120) + 60, // Adjusted for new layout without top color guide
-            width: 60,
-            height: 40,
-            speed: 3, // Normal speed - back to 3 for balanced gameplay
+            width: isSmallMobile ? 50 : isMobile ? 55 : 60,
+            height: isSmallMobile ? 35 : isMobile ? 38 : 40,
+            speed: isMobile ? 2.5 : 3, // Slightly slower on mobile for easier gameplay
             color: randomChoice.color,
             hexColor: randomChoice.hexColor,
             category: randomChoice.category,
@@ -398,6 +500,11 @@ class FlightAdventureGame {
                     this.createParticle(target.x + target.width / 2, target.y + target.height / 2, '#01B27C', 15);
                     this.showAchievement(`Correct! +100 ustar ⭐`);
                     
+                    // Play correct answer sound
+                    if (window.audioManager) {
+                        window.audioManager.playCorrectSound();
+                    }
+                    
                     // Update the color category display
                     this.updateColorCategoryDisplay();
                     
@@ -419,6 +526,11 @@ class FlightAdventureGame {
                     this.questionsAnswered++;
                     this.createParticle(target.x + target.width / 2, target.y + target.height / 2, '#FC6A59', 15);
                     this.showAchievement(`Wrong! Correct: ${this.currentQuestion.correctAnswer} 💔`);
+                    
+                    // Play wrong answer sound
+                    if (window.audioManager) {
+                        window.audioManager.playWrongSound();
+                    }
                     
                     if (this.lives <= 0) {
                         // Game over immediately
