@@ -1,6 +1,6 @@
-# 🚀 Hand Gesture Space Adventure
+# 🚀 colour selection using Hand Gesture
 
-An engaging web-based space adventure game controlled entirely through hand gestures using MediaPipe hand tracking technology!
+A simple game controlled entirely through hand gestures using MediaPipe hand tracking technology!
 
 ![Game Preview](hand_landmarks.png)
 
