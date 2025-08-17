@@ -92,13 +92,13 @@ class FlightAdventureGame {
         let maxWidth, maxHeight;
         
         if (isSmallMobile) {
-            // Small mobile - use almost full width with minimal padding
-            maxWidth = Math.min(rect.width - 20, window.innerWidth - 40);
-            maxHeight = Math.min(rect.height - 20, 240); // Smaller height for small screens
+            // Small mobile - use viewport dimensions more effectively
+            maxWidth = Math.min(rect.width - 10, window.innerWidth - 20);
+            maxHeight = Math.min(rect.height - 10, window.innerHeight * 0.3); // 30% of viewport height
         } else if (isMobile) {
-            // Tablet/large mobile
-            maxWidth = Math.min(rect.width - 30, window.innerWidth - 60);
-            maxHeight = Math.min(rect.height - 30, 350);
+            // Tablet/large mobile - better viewport usage
+            maxWidth = Math.min(rect.width - 20, window.innerWidth - 40);
+            maxHeight = Math.min(rect.height - 20, window.innerHeight * 0.4); // 40% of viewport height
         } else {
             // Desktop - use available container space more efficiently
             maxWidth = Math.min(rect.width - 20, window.innerWidth - 200);
@@ -111,15 +111,20 @@ class FlightAdventureGame {
         
         if (isMobile) {
             // On mobile, prioritize fitting in available space
-            canvasHeight = Math.min(maxHeight, (maxWidth * 3) / 4); // 4:3 ratio but flexible
+            canvasHeight = Math.min(maxHeight, maxWidth * 0.6); // More rectangular for mobile
+            // Ensure it's not too small
+            if (canvasHeight < 180) {
+                canvasHeight = 180;
+                canvasWidth = Math.min(maxWidth, canvasHeight * 1.6); // Adjust width accordingly
+            }
         } else {
             // Desktop maintains 4:3 ratio but fits in container
             canvasHeight = Math.min(maxHeight, (maxWidth * 3) / 4);
         }
         
-        // Ensure minimum dimensions
-        canvasWidth = Math.max(canvasWidth, 280);
-        canvasHeight = Math.max(canvasHeight, 200);
+        // Ensure minimum dimensions but be mobile-friendly
+        canvasWidth = Math.max(canvasWidth, isSmallMobile ? 260 : 280);
+        canvasHeight = Math.max(canvasHeight, isSmallMobile ? 160 : 200);
         
         // Set the actual canvas size
         this.canvas.width = canvasWidth;
@@ -129,9 +134,18 @@ class FlightAdventureGame {
         this.width = canvasWidth;
         this.height = canvasHeight;
         
-        // Set CSS size explicitly
-        this.canvas.style.width = canvasWidth + 'px';
-        this.canvas.style.height = canvasHeight + 'px';
+        // Set CSS size for responsive display
+        if (isMobile) {
+            // On mobile, use responsive sizing
+            this.canvas.style.width = '100%';
+            this.canvas.style.height = 'auto';
+            this.canvas.style.maxWidth = canvasWidth + 'px';
+            this.canvas.style.maxHeight = canvasHeight + 'px';
+        } else {
+            // Desktop uses fixed sizing
+            this.canvas.style.width = canvasWidth + 'px';
+            this.canvas.style.height = canvasHeight + 'px';
+        }
         
         console.log(`Canvas setup: ${canvasWidth}x${canvasHeight}`);
         
@@ -226,8 +240,12 @@ class FlightAdventureGame {
     }
 
     generateNewQuestion() {
+        console.log(`🔍 Checking game completion: ${this.correctCategories.size}/${this.totalQuestions} categories completed`);
+        console.log('✅ Completed categories:', Array.from(this.correctCategories));
+        
         // If all 7 categories have been answered correctly, player wins!
         if (this.correctCategories.size >= this.totalQuestions) {
+            console.log('🎉 Game completed! Triggering winner screen...');
             this.gameState = 'winner';
             this.winner();
             return;
@@ -238,8 +256,11 @@ class FlightAdventureGame {
             !this.correctCategories.has(category.category)
         );
         
+        console.log('📋 Remaining categories:', remainingCategories.map(c => c.category));
+        
         if (remainingCategories.length === 0) {
             // This shouldn't happen, but just in case
+            console.log('⚠️ No remaining categories! Triggering winner screen...');
             this.gameState = 'winner';
             this.winner();
             return;
@@ -258,6 +279,9 @@ class FlightAdventureGame {
             choices: choices,
             category: randomCategory.category
         };
+        
+        console.log(`❓ New question generated: "${randomCategory.category}" (Answer: ${randomCategory.color})`);
+        console.log(`🎯 Available choices: ${choices.map(c => c.color).join(', ')}`);
         
         this.questionAnswered = false;
         this.showingResult = false;
@@ -505,6 +529,10 @@ class FlightAdventureGame {
                     this.createParticle(target.x + target.width / 2, target.y + target.height / 2, '#01B27C', 15);
                     this.showAchievement(`Correct! +100 ustar ⭐`);
                     
+                    console.log(`✅ Correct answer for category: ${this.currentQuestion.category}`);
+                    console.log(`📊 Progress: ${this.correctCategories.size}/${this.totalQuestions} categories completed`);
+                    console.log(`🗂️ Completed categories:`, Array.from(this.correctCategories));
+                    
                     // Play correct answer sound
                     if (window.audioManager) {
                         window.audioManager.playCorrectSound();
@@ -515,6 +543,9 @@ class FlightAdventureGame {
                     
                     // Check if all 7 categories have been answered correctly
                     if (this.correctCategories.size >= this.totalQuestions) {
+                        console.log('🎉 GAME COMPLETED! All 7 categories answered correctly!');
+                        console.log(`🏆 Final Score: ${this.score}`);
+                        console.log('🚀 Triggering winner screen...');
                         // Player wins! All 7 categories answered correctly
                         setTimeout(() => {
                             this.winner();
@@ -871,18 +902,53 @@ class FlightAdventureGame {
     }
 
     winner() {
+        console.log('🏆 winner() method called');
+        console.log('📊 Final game state:', {
+            score: this.score,
+            correctCategories: Array.from(this.correctCategories),
+            totalQuestions: this.totalQuestions,
+            gameState: this.gameState
+        });
         this.gameState = 'winner';
         this.showWinner();
     }
 
     showWinner() {
-        document.getElementById('winnerScore').textContent = this.score;
-        document.getElementById('winnerScreen').classList.remove('hidden');
+        console.log('🎉 showWinner() method called - displaying congratulations screen');
+        console.log('📊 Final score:', this.score);
+        console.log('✅ Correct categories completed:', this.correctCategories.size);
+        console.log('🎯 High Score Manager available:', !!window.highScoreManager);
+        
+        // Check if elements exist
+        const winnerScoreEl = document.getElementById('winnerScore');
+        const winnerScreenEl = document.getElementById('winnerScreen');
+        
+        console.log('🔍 DOM Elements check:', {
+            winnerScore: !!winnerScoreEl,
+            winnerScreen: !!winnerScreenEl
+        });
+        
+        if (winnerScoreEl) {
+            winnerScoreEl.textContent = this.score;
+            console.log('✅ Winner score element updated');
+        } else {
+            console.error('❌ Winner score element not found!');
+        }
+        
+        if (winnerScreenEl) {
+            winnerScreenEl.classList.remove('hidden');
+            console.log('✅ Winner screen shown');
+        } else {
+            console.error('❌ Winner screen element not found!');
+        }
         
         // Add score to high score table
         if (window.highScoreManager) {
+            console.log('💾 Adding score to high score manager...');
             const rank = window.highScoreManager.addScore(this.score);
-            console.log(`Player finished with rank ${rank} and score ${this.score}`);
+            console.log(`🏅 Player finished with rank ${rank} and score ${this.score}`);
+        } else {
+            console.error('❌ High Score Manager not available!');
         }
         
         // Add celebratory particles

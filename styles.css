@@ -640,6 +640,28 @@ body::before {
     animation: bounce 1s ease-in-out infinite alternate;
 }
 
+.winner-score {
+    background: rgba(1, 178, 124, 0.2);
+    border: 2px solid var(--accent-color);
+    border-radius: 15px;
+    padding: 15px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.winner-score p {
+    font-size: 1.5rem;
+    color: var(--text-color);
+    margin: 0;
+    font-weight: bold;
+}
+
+.winner-score #winnerScore {
+    color: var(--accent-color);
+    font-size: 2rem;
+    text-shadow: 0 0 10px rgba(1, 178, 124, 0.5);
+}
+
 @keyframes rainbow {
     0% { filter: hue-rotate(0deg); }
     100% { filter: hue-rotate(360deg); }

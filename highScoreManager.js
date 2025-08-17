@@ -33,6 +33,9 @@ class HighScoreManager {
     }
     
     addScore(score) {
+        console.log('🏅 HighScoreManager.addScore() called with score:', score);
+        console.log('👤 Current player:', this.currentPlayer);
+        
         const newEntry = {
             name: this.currentPlayer.name,
             account: this.currentPlayer.account,
@@ -40,14 +43,20 @@ class HighScoreManager {
             date: new Date().toISOString()
         };
         
+        console.log('📝 New high score entry:', newEntry);
+        
         this.highScores.push(newEntry);
         this.highScores.sort((a, b) => b.score - a.score);
         this.highScores = this.highScores.slice(0, 10); // Keep top 10
         
+        console.log('📊 Updated high scores:', this.highScores);
+        
         this.saveHighScores();
         this.updateScoreListDisplay();
         
-        return this.getPlayerRank(score);
+        const rank = this.getPlayerRank(score);
+        console.log('🎯 Player rank:', rank);
+        return rank;
     }
     
     getPlayerRank(score) {
