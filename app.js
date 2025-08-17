@@ -21,6 +21,9 @@ class GameApp {
             const canvas = document.getElementById('gameCanvas');
             this.game = new FlightAdventureGame(canvas);
             
+            // Make game globally accessible
+            window.game = this.game;
+            
             this.updateLoadingText('Loading Aircraft Assets...');
             
             // Wait for game images to load

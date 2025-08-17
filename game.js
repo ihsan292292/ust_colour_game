@@ -88,21 +88,21 @@ class FlightAdventureGame {
         const isMobile = window.innerWidth <= 768;
         const isSmallMobile = window.innerWidth <= 480;
         
-        // Set canvas size based on device type
+        // Set canvas size based on available space
         let maxWidth, maxHeight;
         
         if (isSmallMobile) {
             // Small mobile - use almost full width with minimal padding
-            maxWidth = Math.min(rect.width - 10, window.innerWidth - 20);
-            maxHeight = Math.min(rect.height - 10, 280); // Fixed height for small screens
+            maxWidth = Math.min(rect.width - 20, window.innerWidth - 40);
+            maxHeight = Math.min(rect.height - 20, 240); // Smaller height for small screens
         } else if (isMobile) {
             // Tablet/large mobile
-            maxWidth = Math.min(rect.width - 20, window.innerWidth - 40);
-            maxHeight = Math.min(rect.height - 20, 380);
+            maxWidth = Math.min(rect.width - 30, window.innerWidth - 60);
+            maxHeight = Math.min(rect.height - 30, 350);
         } else {
-            // Desktop
-            maxWidth = Math.min(rect.width - 40, window.innerWidth - 100);
-            maxHeight = Math.min(rect.height - 40, window.innerHeight - 200);
+            // Desktop - use available container space more efficiently
+            maxWidth = Math.min(rect.width - 20, window.innerWidth - 200);
+            maxHeight = Math.min(rect.height - 20, window.innerHeight - 400);
         }
         
         // Maintain aspect ratio but be more flexible on mobile
@@ -110,16 +110,11 @@ class FlightAdventureGame {
         let canvasHeight;
         
         if (isMobile) {
-            // On mobile, prioritize width and adjust height accordingly
-            canvasHeight = Math.min(maxHeight, (maxWidth * 2) / 3); // 3:2 ratio for mobile
+            // On mobile, prioritize fitting in available space
+            canvasHeight = Math.min(maxHeight, (maxWidth * 3) / 4); // 4:3 ratio but flexible
         } else {
-            // Desktop maintains 4:3 ratio
-            canvasHeight = (maxWidth * 3) / 4;
-            
-            if (canvasHeight > maxHeight) {
-                canvasHeight = maxHeight;
-                canvasWidth = (maxHeight * 4) / 3;
-            }
+            // Desktop maintains 4:3 ratio but fits in container
+            canvasHeight = Math.min(maxHeight, (maxWidth * 3) / 4);
         }
         
         // Ensure minimum dimensions
@@ -134,13 +129,11 @@ class FlightAdventureGame {
         this.width = canvasWidth;
         this.height = canvasHeight;
         
-        // Scale content for high DPI displays
-        const dpr = window.devicePixelRatio || 1;
+        // Set CSS size explicitly
         this.canvas.style.width = canvasWidth + 'px';
         this.canvas.style.height = canvasHeight + 'px';
-        this.canvas.width = canvasWidth * dpr;
-        this.canvas.height = canvasHeight * dpr;
-        this.ctx.scale(dpr, dpr);
+        
+        console.log(`Canvas setup: ${canvasWidth}x${canvasHeight}`);
         
         // Update player position if it exists
         if (this.player) {
@@ -223,6 +216,9 @@ class FlightAdventureGame {
         this.correctAnswers = 0;
         this.correctCategories = new Set(); // Reset correctly answered categories
         this.askedQuestions = new Set(); // Reset asked questions
+        
+        // Reset color category visual indicators
+        this.resetColorCategoryDisplay();
         this.currentQuestion = null;
         this.questionAnswered = false;
         this.showingResult = false;
@@ -287,11 +283,16 @@ class FlightAdventureGame {
     }
 
     start() {
+        console.log('Game start() called');
+        
         // Wait for images to load before starting
         if (!this.imagesLoaded) {
+            console.log('Images not loaded yet, waiting...');
             setTimeout(() => this.start(), 100);
             return;
         }
+        
+        console.log('Starting game with dimensions:', this.width, 'x', this.height);
         
         this.gameState = 'playing';
         this.initializeGame();
@@ -303,6 +304,7 @@ class FlightAdventureGame {
             window.audioManager.playBackgroundMusic();
         }
         
+        console.log('Game loop starting...');
         this.gameLoop();
         this.updateUI();
     }
@@ -361,7 +363,10 @@ class FlightAdventureGame {
     }
 
     gameLoop(currentTime = 0) {
-        if (this.gameState !== 'playing') return;
+        if (this.gameState !== 'playing') {
+            console.log('Game loop stopped, state:', this.gameState);
+            return;
+        }
 
         this.deltaTime = currentTime - this.lastTime;
         this.lastTime = currentTime;
@@ -639,6 +644,11 @@ class FlightAdventureGame {
         this.ctx.fillStyle = '#F2F7F8';
         this.ctx.fillRect(0, 0, this.width, this.height);
         
+        // Debug: Add a visible border to check if canvas is rendering
+        this.ctx.strokeStyle = '#006E74';
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(1, 1, this.width - 2, this.height - 2);
+        
         // Draw subtle background elements
         this.renderBackground();
         
@@ -669,13 +679,23 @@ class FlightAdventureGame {
     }
 
     updateColorCategoryDisplay() {
-        // Highlight correct categories in the sidebar
-        const categoryElements = document.querySelectorAll('.color-category');
-        categoryElements.forEach(element => {
+        // Highlight correct categories in the sidebar using the new structure
+        const colorItems = document.querySelectorAll('.color-item');
+        colorItems.forEach(element => {
             const colorName = element.getAttribute('data-color');
-            if (this.correctCategories.has(this.colorCategories.find(c => c.color === colorName)?.category)) {
+            // Find the category that matches this color
+            const colorCategory = this.colorCategories.find(c => c.color === colorName);
+            if (colorCategory && this.correctCategories.has(colorCategory.category)) {
                 element.classList.add('correct');
             }
+        });
+    }
+    
+    resetColorCategoryDisplay() {
+        // Remove correct indicators from all color items
+        const colorItems = document.querySelectorAll('.color-item');
+        colorItems.forEach(element => {
+            element.classList.remove('correct');
         });
     }
 
@@ -782,6 +802,11 @@ class FlightAdventureGame {
         // Update questions answered
         document.getElementById('timePlayed').textContent = 
             `${this.questionsAnswered} Questions`;
+            
+        // Update high score manager
+        if (window.highScoreManager) {
+            window.highScoreManager.updateCurrentPlayerScore(this.score);
+        }
     }
 
     // Add keyboard support for arrow keys (for testing)
@@ -828,11 +853,17 @@ class FlightAdventureGame {
         document.getElementById('finalScore').textContent = this.score;
         document.getElementById('gameOverScreen').classList.remove('hidden');
         
+        // Add score to high score table
+        if (window.highScoreManager) {
+            const rank = window.highScoreManager.addScore(this.score);
+            console.log(`Game over. Player finished with rank ${rank} and score ${this.score}`);
+        }
+        
         // Show achievements
         const achievements = [];
         if (this.score > 1000) achievements.push('🏆 Ace Pilot');
         if (this.level >= 5) achievements.push('✈️ Flight Commander');
-        if (this.accuracyStats.hits / this.accuracyStats.shots > 0.8) achievements.push('� Top Gun');
+        if (this.accuracyStats.hits / this.accuracyStats.shots > 0.8) achievements.push('🎯 Top Gun');
         
         const achievementsDiv = document.getElementById('achievements');
         achievementsDiv.innerHTML = achievements.length > 0 ? 
@@ -847,6 +878,12 @@ class FlightAdventureGame {
     showWinner() {
         document.getElementById('winnerScore').textContent = this.score;
         document.getElementById('winnerScreen').classList.remove('hidden');
+        
+        // Add score to high score table
+        if (window.highScoreManager) {
+            const rank = window.highScoreManager.addScore(this.score);
+            console.log(`Player finished with rank ${rank} and score ${this.score}`);
+        }
         
         // Add celebratory particles
         for (let i = 0; i < 20; i++) {

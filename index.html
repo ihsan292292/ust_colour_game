@@ -58,53 +58,50 @@
 
         <!-- Game Main Area -->
         <main class="game-main">
-            <!-- Color Categories Sidebar -->
-            <aside class="color-categories-sidebar">
-                <h3>UST Color Categories</h3>
-                <div class="color-categories-list" id="colorCategoriesList">
-                    <div class="color-category" data-color="Purple">
-                        <div class="color-box" style="background-color: #7B2CBF;"></div>
-                        <div class="color-info">
-                            <span class="color-name">Purple</span>
-                            
+            <!-- High Score Table Sidebar -->
+            <aside class="high-score-sidebar">
+                <div class="current-player" id="currentPlayer">
+                    <div class="player-info">
+                        <div class="player-avatar">👤</div>
+                        <div class="player-details">
+                            <div class="player-name" id="currentPlayerName">Player</div>
+                            <div class="player-account" id="currentPlayerAccount">Guest</div>
+                            <div class="current-score">Score: <span id="currentPlayerScore">0</span></div>
                         </div>
                     </div>
-                    <div class="color-category" data-color="Indigo">
-                        <div class="color-box" style="background-color: #3F37C9;"></div>
-                        <div class="color-info">
-                            <span class="color-name">Indigo</span>
+                </div>
+                
+                <!-- UST Color Categories Reference -->
+                <div class="color-reference">
+                    <h4>Color Categories</h4>
+                    <div class="color-categories-compact">
+                        <div class="color-item" data-color="Purple">
+                            <div class="color-dot" style="background-color: #7B2CBF;"></div>
+                            <span>Purple</span>
                         </div>
-                    </div>
-                    <div class="color-category" data-color="Quartz">
-                        <div class="color-box" style="background-color: #51484F;"></div>
-                        <div class="color-info">
-                            <span class="color-name">Quartz</span>
+                        <div class="color-item" data-color="Indigo">
+                            <div class="color-dot" style="background-color: #3F37C9;"></div>
+                            <span>Indigo </span>
                         </div>
-                    </div>
-                    <div class="color-category" data-color="Green">
-                        <div class="color-box" style="background-color: #01B27C;"></div>
-                        <div class="color-info">
-                            <span class="color-name">Green</span>
+                        <div class="color-item" data-color="Quartz">
+                            <div class="color-dot" style="background-color: #51484F;"></div>
+                            <span>Quartz </span>
                         </div>
-                    </div>
-                    <div class="color-category" data-color="Gold">
-                        <div class="color-box" style="background-color: #FFD700;"></div>
-                        <div class="color-info">
-                            <span class="color-name">Gold</span>
+                        <div class="color-item" data-color="Green">
+                            <div class="color-dot" style="background-color: #01B27C;"></div>
+                            <span>Green</span>
                         </div>
-                    </div>
-                    <div class="color-category" data-color="Orange">
-                        <div class="color-box" style="background-color: #FF8500;"></div>
-                        <div class="color-info">
-                            <span class="color-name">Orange</span>
-                            
+                        <div class="color-item" data-color="Gold">
+                            <div class="color-dot" style="background-color: #FFD700;"></div>
+                            <span>Gold </span>
                         </div>
-                    </div>
-                    <div class="color-category" data-color="Rose">
-                        <div class="color-box" style="background-color: #FF69B4;"></div>
-                        <div class="color-info">
-                            <span class="color-name">Rose</span>
-                            
+                        <div class="color-item" data-color="Orange">
+                            <div class="color-dot" style="background-color: #FF8500;"></div>
+                            <span>Orange </span>
+                        </div>
+                        <div class="color-item" data-color="Rose">
+                            <div class="color-dot" style="background-color: #FF69B4;"></div>
+                            <span>Rose </span>
                         </div>
                     </div>
                 </div>
@@ -132,95 +129,11 @@
                                 <input type="text" id="playerName" placeholder="Enter your name" maxlength="20">
                             </div>
                             <div class="form-group">
-                                <label for="playerAccount">🏢 UST Account (Optional):</label>
+                                <label for="playerAccount">🏢 Account Name(Optional):</label>
                                 <input type="text" id="playerAccount" placeholder="Enter your UST ID" maxlength="50">
                             </div>
                         </div>
-                        <div class="welcome-info">
-                            <h3>🎯 Game Overview</h3>
-                            <p>Test your knowledge of UST's 7 color categories while controlling your aircraft with hand gestures!</p>
-                            <ul>
-                                <li>🟣 Purple - People</li>
-                                <li>🔵 Indigo - Integral Processes</li>
-                                <li>⚫ Quartz - Quality</li>
-                                <li>🟢 Green - Growth</li>
-                                <li>🟡 Gold - Global Branding</li>
-                                <li>🟠 Orange - Organizational Efficiency</li>
-                                <li>🌸 Rose - Relation</li>
-                            </ul>
-                        </div>
-                        <button class="start-btn" onclick="showGestureDemo()">NEXT: LEARN CONTROLS ➡️</button>
-                    </div>
-                </div>
-
-                <!-- Gesture Demo Screen -->
-                <div class="game-overlay hidden" id="gestureDemoScreen">
-                    <div class="overlay-content demo-content">
-                        <h2>✋ Hand Gesture Tutorial</h2>
-                        <div class="demo-area">
-                            <div class="demo-video-container">
-                                <video id="demoVideoElement" class="demo-video" autoplay muted playsinline></video>
-                                <canvas id="demoHandCanvas" class="demo-hand-overlay"></canvas>
-                                <div class="demo-status">
-                                    <div class="demo-camera-status" id="demoCameraStatus">
-                                        <span class="status-light"></span>
-                                        <span>Camera: Connecting...</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="demo-instructions">
-                                <h3>🎯 Practice These Gestures:</h3>
-                                <div class="demo-gesture-list">
-                                    <div class="demo-gesture-item" id="demoGestureUp">
-                                        <div class="gesture-visual">✋</div>
-                                        <div class="gesture-details">
-                                            <h4>Open Hand</h4>
-                                            <p>Fly Up ⬆️</p>
-                                            <div class="practice-status">Try it now!</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="demo-gesture-item" id="demoGestureDown">
-                                        <div class="gesture-visual">✊</div>
-                                        <div class="gesture-details">
-                                            <h4>Closed Fist</h4>
-                                            <p>Fly Down ⬇️</p>
-                                            <div class="practice-status">Try it now!</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="demo-progress">
-                                    <h4>🏆 Practice Progress:</h4>
-                                    <div class="progress-items">
-                                        <div class="progress-item" id="progressUp">
-                                            <span>Open Hand:</span>
-                                            <span class="progress-status">❌ Not Practiced</span>
-                                        </div>
-                                        <div class="progress-item" id="progressDown">
-                                            <span>Closed Fist:</span>
-                                            <span class="progress-status">❌ Not Practiced</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="demo-controls">
-                            <button class="back-btn" onclick="showPlayerRegistration()">⬅️ BACK</button>
-                            <button class="start-btn" id="startGameBtn" onclick="startGameFromDemo()" disabled>START GAME 🚀</button>
-                        </div>
-                        
-                        <div class="demo-tips">
-                            <h4>💡 Tips for Better Recognition:</h4>
-                            <ul>
-                                <li>• Keep your hand clearly visible in the camera</li>
-                                <li>• Make distinct gestures (fully open or fully closed)</li>
-                                <li>• Hold gestures for 1-2 seconds</li>
-                                <li>• Ensure good lighting for better detection</li>
-                            </ul>
-                        </div>
+                        <button class="start-btn" onclick="startGameDirectly()">START GAME 🚀</button>
                     </div>
                 </div>
 
@@ -270,22 +183,7 @@
                 <div class="game-overlay hidden" id="winnerScreen">
                     <div class="overlay-content winner-content">
                         <h2>🏆 CONGRATULATIONS! 🌈</h2>
-                        <h3>🎉 Perfect Color Master! 🎉</h3>
-                        <p class="winner-message">You answered all 7 color categories correctly!</p>
-                        <div class="winner-stats">
-                            <div class="winner-stat">
-                                <span class="stat-icon">🌟</span>
-                                <span class="stat-text">Perfect Score: <span id="winnerScore">0</span></span>
-                            </div>
-                            <div class="winner-stat">
-                                <span class="stat-icon">🎯</span>
-                                <span class="stat-text">Questions Mastered: 7/7</span>
-                            </div>
-                            <div class="winner-stat">
-                                <span class="stat-icon">✈️</span>
-                                <span class="stat-text">Flight Mission Complete!</span>
-                            </div>
-                        </div>
+                        <h3>🎉 You answered all 7 color categories correctly!🎉</h3>
                         <button class="restart-btn winner-btn" onclick="restartGame()">🚀 NEW MISSION</button>
                     </div>
                 </div>
@@ -316,24 +214,6 @@
                     </div>
                 </div>
 
-                <div class="game-controls">
-                    <h3>🎮 Game Controls</h3>
-                    <div class="control-buttons">
-                        <button class="control-btn" onclick="togglePause()" id="pauseBtn">⏸️ PAUSE</button>
-                        <button class="control-btn" onclick="toggleSound()" id="soundBtn">🔊 SOUND ON</button>
-                        <button class="control-btn" onclick="showInstructions()" id="helpBtn">❓ HELP</button>
-                    </div>
-                    <div class="difficulty-selector">
-                        <label>Difficulty:</label>
-                        <select id="difficulty" onchange="changeDifficulty()">
-                            <option value="easy">🟢 Easy</option>
-                            <option value="normal" selected>🟡 Normal</option>
-                            <option value="hard">🔴 Hard</option>
-                            <option value="nightmare">💀 Nightmare</option>
-                        </select>
-                    </div>
-                </div>
-
                 <div class="performance-stats">
                     <h3>📊 Quiz Statistics</h3>
                     <div class="stat-row">
@@ -349,8 +229,40 @@
                         <span id="timePlayed">0 Questions</span>
                     </div>
                 </div>
+                <h3 style="color: #51484F;font-family: Arial;">🏆 High Scores</h3>
+                <div class="score-list" id="scoreList">
+                    <div class="score-item">
+                        <div class="rank">1st</div>
+                        <div class="player-data">
+                            <div class="name">Demo Player</div>
+                            <div class="account">demo@ust.hk</div>
+                        </div>
+                        <div class="score">2500</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="rank">2nd</div>
+                        <div class="player-data">
+                            <div class="name">Test User</div>
+                            <div class="account">test@ust.hk</div>
+                        </div>
+                        <div class="score">2100</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="rank">3rd</div>
+                        <div class="player-data">
+                            <div class="name">Quiz Master</div>
+                            <div class="account">quiz@ust.hk</div>
+                        </div>
+                        <div class="score">1800</div>
+                    </div>
+                </div>
             </div>
         </main>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator" id="scrollIndicator">
+        ↓
     </div>
 
     <!-- MediaPipe Scripts -->
@@ -360,7 +272,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
     
     <!-- Game Scripts -->
+    <script src="scrollManager.js"></script>
     <script src="audioManager.js"></script>
+    <script src="highScoreManager.js"></script>
     <script src="playerRegistration.js"></script>
     <script src="touchControls.js"></script>
     <script src="game.js"></script>
