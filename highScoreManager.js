@@ -60,23 +60,51 @@ class HighScoreManager {
     
     updateScoreListDisplay() {
         const scoreListEl = document.getElementById('scoreList');
+        const noScoresMessage = document.getElementById('noScoresMessage');
+        
         if (!scoreListEl) return;
         
-        const topScores = this.highScores.slice(0, 5); // Show top 5
+        const topScores = this.highScores.slice(0, 10); // Show top 10 (increased from 5)
         
-        scoreListEl.innerHTML = topScores.map((entry, index) => {
-            const rankText = this.getRankText(index + 1);
-            return `
-                <div class="score-item ${this.isCurrentPlayer(entry) ? 'current-player-score' : ''}">
-                    <div class="rank">${rankText}</div>
-                    <div class="player-data">
-                        <div class="name">${this.truncateText(entry.name, 12)}</div>
-                        <div class="account">${this.truncateText(entry.account, 15)}</div>
+        if (topScores.length === 0) {
+            // Show "no scores" message
+            if (noScoresMessage) {
+                noScoresMessage.style.display = 'block';
+            }
+            // Clear any existing score items
+            const existingItems = scoreListEl.querySelectorAll('.score-item');
+            existingItems.forEach(item => item.remove());
+        } else {
+            // Hide "no scores" message
+            if (noScoresMessage) {
+                noScoresMessage.style.display = 'none';
+            }
+            
+            // Create score items HTML
+            const scoresHTML = topScores.map((entry, index) => {
+                const rankText = this.getRankText(index + 1);
+                return `
+                    <div class="score-item ${this.isCurrentPlayer(entry) ? 'current-player-score' : ''}">
+                        <div class="rank">${rankText}</div>
+                        <div class="player-data">
+                            <div class="name">${this.truncateText(entry.name, 15)}</div>
+                            <div class="account">${this.truncateText(entry.account, 20)}</div>
+                        </div>
+                        <div class="score">${entry.score}</div>
                     </div>
-                    <div class="score">${entry.score}</div>
-                </div>
-            `;
-        }).join('');
+                `;
+            }).join('');
+            
+            // Update only the score items, keeping the no-scores message element
+            const existingItems = scoreListEl.querySelectorAll('.score-item');
+            existingItems.forEach(item => item.remove());
+            
+            if (noScoresMessage) {
+                noScoresMessage.insertAdjacentHTML('afterend', scoresHTML);
+            } else {
+                scoreListEl.innerHTML = scoresHTML;
+            }
+        }
     }
     
     isCurrentPlayer(entry) {
@@ -101,10 +129,10 @@ class HighScoreManager {
     loadHighScores() {
         try {
             const saved = localStorage.getItem('ustColorGameHighScores');
-            return saved ? JSON.parse(saved) : this.getDefaultScores();
+            return saved ? JSON.parse(saved) : [];
         } catch (error) {
             console.warn('Could not load high scores:', error);
-            return this.getDefaultScores();
+            return [];
         }
     }
     
@@ -116,14 +144,11 @@ class HighScoreManager {
         }
     }
     
-    getDefaultScores() {
-        return [
-            { name: 'Demo Player', account: 'demo@ust.hk', score: 2500, date: new Date().toISOString() },
-            { name: 'Test User', account: 'test@ust.hk', score: 2100, date: new Date().toISOString() },
-            { name: 'Quiz Master', account: 'quiz@ust.hk', score: 1800, date: new Date().toISOString() },
-            { name: 'Color Expert', account: 'expert@ust.hk', score: 1500, date: new Date().toISOString() },
-            { name: 'UST Student', account: 'student@ust.hk', score: 1200, date: new Date().toISOString() }
-        ];
+    clearAllScores() {
+        this.highScores = [];
+        this.saveHighScores();
+        this.updateScoreListDisplay();
+        console.log('All high scores cleared');
     }
     
     updateDisplay() {

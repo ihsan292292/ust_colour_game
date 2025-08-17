@@ -195,11 +195,11 @@ body::before {
 
 /* Current Player Display */
 .current-player {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: #ECECE1;
     border-radius: 10px;
     padding: 15px;
     margin-bottom: 20px;
-    color: white;
+    color: rgb(0, 0, 0);
 }
 
 .player-info {
@@ -225,21 +225,22 @@ body::before {
 
 .player-name {
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     margin-bottom: 4px;
+    font-family: Arial;
 }
 
 .player-account {
-    font-size: 0.9rem;
-    opacity: 0.8;
+    font-size: 1.2rem;
     margin-bottom: 6px;
+    font-family: Arial;
 }
 
 .current-score {
     font-weight: 600;
-    font-size: 1rem;
-    color: var(--accent-color);
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    font-size: 1.5rem;
+    color: #01B27C
+    
 }
 
 /* Score List */
@@ -285,14 +286,13 @@ body::before {
 }
 
 .player-data .name {
-    font-weight: 600;
     color: #000;
-    font-size: 0.95rem;
+    font-size: 1.5rem;
     margin-bottom: 2px;
 }
 
 .player-data .account {
-    font-size: 0.8rem;
+    font-size: 1.2rem;
     color: #666;
 }
 
@@ -466,7 +466,7 @@ body::before {
     font-size: 1.4rem;
     font-weight: 700;
     text-align: center;
-    margin: 0;
+    margin-top: 5px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     letter-spacing: 1px;
     position: relative;
@@ -751,7 +751,7 @@ body::before {
 }
 
 /* High Scores in Control Panel */
-.control-panel .score-list {
+.score-list {
     background: var(--neutral-cream);
     border: 1px solid var(--primary-color);
     border-radius: 15px;
@@ -760,41 +760,41 @@ body::before {
     color: var(--text-color);
     font-family: Arial;
     flex-shrink: 0;
-    max-height: 300px;
     overflow-y: auto;
+    font-size: 1.6rem; /* Increased from 1.5rem */
 }
 
 .control-panel .score-item {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    padding: 8px;
-    margin-bottom: 6px;
+    padding: 12px; /* Increased from 8px */
+    margin-bottom: 8px; /* Increased from 6px */
     transition: all 0.3s ease;
 }
 
 .control-panel .score-item .rank {
     color: var(--accent-color);
     font-weight: 700;
-    min-width: 30px;
-    font-size: 0.85rem;
+    min-width: 35px; /* Increased from 30px */
+    font-size: 1rem; /* Increased from 0.85rem */
 }
 
 .control-panel .score-item .name {
     color: #ffffff;
     font-weight: 600;
-    font-size: 0.9rem;
-    margin-bottom: 1px;
+    font-size: 1.1rem; /* Increased from 0.9rem */
+    margin-bottom: 2px; /* Increased from 1px */
 }
 
 .control-panel .score-item .account {
     color: #cccccc;
-    font-size: 0.75rem;
+    font-size: 0.9rem; /* Increased from 0.75rem */
 }
 
 .control-panel .score-item .score {
     color: var(--accent-color);
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 1.1rem; /* Increased from 0.9rem */
 }
 
 .control-panel .score-item.current-player-score {
@@ -1323,6 +1323,25 @@ body::before {
         flex: 1;
         min-width: 100%;
     }
+    
+    /* Adjust score list for mobile */
+    .score-list {
+        max-height: 350px; /* Slightly smaller on tablet */
+        font-size: 1.4rem;
+    }
+    
+    .control-panel .score-item {
+        padding: 10px;
+        margin-bottom: 6px;
+    }
+    
+    .control-panel .score-item .name {
+        font-size: 1rem;
+    }
+    
+    .control-panel .score-item .score {
+        font-size: 1rem;
+    }
 }
 
 /* Mobile Portrait */
@@ -1428,6 +1447,35 @@ body::before {
     .control-panel {
         padding: 10px;
         gap: 10px;
+    }
+    
+    /* Score list mobile adjustments */
+    .score-list {
+        max-height: 280px; /* Smaller on mobile phones */
+        font-size: 1.2rem;
+        padding: 12px;
+    }
+    
+    .control-panel .score-item {
+        padding: 8px;
+        margin-bottom: 5px;
+    }
+    
+    .control-panel .score-item .rank {
+        min-width: 25px;
+        font-size: 0.9rem;
+    }
+    
+    .control-panel .score-item .name {
+        font-size: 0.95rem;
+    }
+    
+    .control-panel .score-item .account {
+        font-size: 0.8rem;
+    }
+    
+    .control-panel .score-item .score {
+        font-size: 0.95rem;
     }
     
     .gesture-status h3,

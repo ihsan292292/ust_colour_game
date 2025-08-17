@@ -6,7 +6,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>🌈 Color Knowledge Quiz - Hand Gesture Game</title>
+    <title>UST colour game</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -231,29 +231,11 @@
                 </div>
                 <h3 style="color: #51484F;font-family: Arial;">🏆 High Scores</h3>
                 <div class="score-list" id="scoreList">
-                    <div class="score-item">
-                        <div class="rank">1st</div>
-                        <div class="player-data">
-                            <div class="name">Demo Player</div>
-                            <div class="account">demo@ust.hk</div>
-                        </div>
-                        <div class="score">2500</div>
-                    </div>
-                    <div class="score-item">
-                        <div class="rank">2nd</div>
-                        <div class="player-data">
-                            <div class="name">Test User</div>
-                            <div class="account">test@ust.hk</div>
-                        </div>
-                        <div class="score">2100</div>
-                    </div>
-                    <div class="score-item">
-                        <div class="rank">3rd</div>
-                        <div class="player-data">
-                            <div class="name">Quiz Master</div>
-                            <div class="account">quiz@ust.hk</div>
-                        </div>
-                        <div class="score">1800</div>
+                    <div class="no-scores-message" id="noScoresMessage">
+                        <p style="color: #ffffff; text-align: center; padding: 20px; font-style: italic;">
+                            🎮 No high scores yet!<br>
+                            Be the first to complete the quiz!
+                        </p>
                     </div>
                 </div>
             </div>
@@ -272,6 +254,23 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
     
     <!-- Game Scripts -->
+    <script>
+        // Clear existing demo data from localStorage (one-time cleanup)
+        if (localStorage.getItem('ustColorGameHighScores')) {
+            const scores = JSON.parse(localStorage.getItem('ustColorGameHighScores'));
+            const hasDemoData = scores.some(score => 
+                score.name === 'Demo Player' || 
+                score.name === 'Test User' || 
+                score.name === 'Quiz Master' ||
+                score.account === 'demo@ust.hk' ||
+                score.account === 'test@ust.hk'
+            );
+            if (hasDemoData) {
+                localStorage.removeItem('ustColorGameHighScores');
+                console.log('Demo data cleared from localStorage');
+            }
+        }
+    </script>
     <script src="scrollManager.js"></script>
     <script src="audioManager.js"></script>
     <script src="highScoreManager.js"></script>
