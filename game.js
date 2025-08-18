@@ -352,11 +352,16 @@ class FlightAdventureGame {
             ...playerData,
             gameStartTime: new Date()
         };
-        
+        if (window.highScoreManager) {
+            window.highScoreManager.setCurrentPlayer(
+                playerData.name,
+                playerData.account,
+                playerData.uid || ''
+            );
+        }
         // Update UI with player name
         this.updatePlayerDisplay();
-        
-        console.log(`Game started by: ${this.playerInfo.name}${this.playerInfo.account ? ` (${this.playerInfo.account})` : ''}`);
+        console.log(`Game started by: ${this.playerInfo.name}${this.playerInfo.account ? ` (${this.playerInfo.account})` : ''}${this.playerInfo.uid ? ` [UID: ${this.playerInfo.uid}]` : ''}`);
     }
     
     updatePlayerDisplay() {
@@ -365,12 +370,6 @@ class FlightAdventureGame {
         playerElements.forEach(element => {
             element.textContent = this.playerInfo.name;
         });
-        
-        // Update game title with player name
-        const gameTitle = document.querySelector('.game-header h1');
-        if (gameTitle && this.playerInfo.name !== 'Player') {
-            gameTitle.textContent = `${this.playerInfo.name}'s Color Quiz`;
-        }
     }
 
     stop() {

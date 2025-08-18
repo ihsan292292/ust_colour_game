@@ -4,15 +4,17 @@ class HighScoreManager {
         this.currentPlayer = {
             name: 'Player',
             account: 'Guest',
+            uid: '',
             score: 0
         };
         this.highScores = this.loadHighScores();
         this.updateDisplay();
     }
     
-    setCurrentPlayer(name, account) {
+    setCurrentPlayer(name, account, uid) {
         this.currentPlayer.name = name || 'Player';
         this.currentPlayer.account = account || 'Guest';
+        this.currentPlayer.uid = uid || '';
         this.currentPlayer.score = 0;
         this.updateCurrentPlayerDisplay();
     }
@@ -25,20 +27,21 @@ class HighScoreManager {
     updateCurrentPlayerDisplay() {
         const nameEl = document.getElementById('currentPlayerName');
         const accountEl = document.getElementById('currentPlayerAccount');
+        const uidEl = document.getElementById('currentPlayerUID');
         const scoreEl = document.getElementById('currentPlayerScore');
-        
         if (nameEl) nameEl.textContent = this.currentPlayer.name;
         if (accountEl) accountEl.textContent = this.currentPlayer.account;
+        if (uidEl) uidEl.textContent = this.currentPlayer.uid;
         if (scoreEl) scoreEl.textContent = this.currentPlayer.score;
     }
     
     addScore(score) {
         console.log('🏅 HighScoreManager.addScore() called with score:', score);
         console.log('👤 Current player:', this.currentPlayer);
-        
         const newEntry = {
             name: this.currentPlayer.name,
             account: this.currentPlayer.account,
+            uid: this.currentPlayer.uid,
             score: score,
             date: new Date().toISOString()
         };
@@ -63,6 +66,7 @@ class HighScoreManager {
         return this.highScores.findIndex(entry => 
             entry.name === this.currentPlayer.name && 
             entry.account === this.currentPlayer.account && 
+            entry.uid === this.currentPlayer.uid &&
             entry.score === score
         ) + 1;
     }

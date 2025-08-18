@@ -69,11 +69,13 @@ class PlayerRegistrationSystem {
     }
     
     showGestureDemo() {
-        const nameInput = document.getElementById('playerName');
-        const accountInput = document.getElementById('playerAccount');
+    const nameInput = document.getElementById('playerName');
+    const accountInput = document.getElementById('playerAccount');
+    const uidInput = document.getElementById('playerUID');
         
-        const name = nameInput.value.trim();
-        const account = accountInput.value.trim();
+    const name = nameInput.value.trim();
+    const account = accountInput.value.trim();
+    const uid = uidInput ? uidInput.value.trim() : '';
         
         if (name.length < 2) {
             alert('Please enter your name (at least 2 characters)');
@@ -85,6 +87,7 @@ class PlayerRegistrationSystem {
         this.playerData = {
             name: name,
             account: account,
+            uid: uid,
             registrationTime: new Date()
         };
         
